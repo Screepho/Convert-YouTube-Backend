@@ -1,23 +1,24 @@
-# Use a Node.js base image
-FROM node:18
+# Use Python base image
+FROM python:3.9-slim
 
-# Install Python and pip (required for yt-dlp)
-RUN apt-get update && apt-get install -y python3 python3-pip && rm -rf /var/lib/apt/lists/*
+# Install Node.js, npm, and ffmpeg
+RUN apt-get update && apt-get install -y nodejs npm ffmpeg && apt-get clean
 
-# Install yt-dlp using pip
-RUN pip3 install yt-dlp
+# Install yt-dlp
+RUN python3 -m pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    python3 -m pip install --no-cache-dir yt-dlp
 
 # Set the working directory
 WORKDIR /app
 
-# Copy package.json and install dependencies
+# Copy Node.js dependencies
 COPY package.json .
 RUN npm install
 
-# Copy the application code
+# Copy application code
 COPY . .
 
-# Expose the port the app runs on
+# Expose port
 EXPOSE 5000
 
 # Start the application
