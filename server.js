@@ -28,12 +28,10 @@ app.post("/convert", (req, res) => {
 
   const allowedFormats = ["mp3", "mp4"];
   if (!allowedFormats.includes(format)) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        error: "Invalid format. Only MP3 and MP4 are supported.",
-      });
+    return res.status(400).json({
+      success: false,
+      error: "Invalid format. Only MP3 and MP4 are supported.",
+    });
   }
 
   const uniqueId = uuidv4();
@@ -70,7 +68,9 @@ app.post("/convert", (req, res) => {
     const conversionCommand =
       format === "mp3"
         ? `yt-dlp -x --audio-format mp3 --output "${filePath}" ${url}` // Extract audio for MP3
-        : `yt-dlp -f ${bestVideoFormat.format_id} --output "${filePath}" ${url}`; // Use best available resolution for MP4
+        : `yt-dlp -f ${
+            bestVideoFormat.format_id || "best"
+          } --output "${filePath}" ${url}`; // Use best available resolution for MP4
 
     exec(conversionCommand, (convError, convStdout, convStderr) => {
       if (convError) {
